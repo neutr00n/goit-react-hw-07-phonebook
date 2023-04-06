@@ -45,8 +45,6 @@ export const Button = styled.button`
   justify-content: center;
   margin: 0 auto;
   padding: 5px 15px;
-  width: 120px;
-  height: 38px;
 
   font-weight: 500;
   font-size: 16px;

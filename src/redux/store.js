@@ -1,13 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { phoneBookApi } from './phoneBookApi';
-import phoneBookReducer from './phoneBookSlice';
+import phoneBookSlice from './phoneBookSlice';
 
 export const store = configureStore({
   reducer: {
-    phoneBook: phoneBookReducer,
-    [phoneBookApi.reducerPath]: phoneBookApi.reducer,
+    phoneBook: phoneBookSlice,
   },
-
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(phoneBookApi.middleware),
 });
