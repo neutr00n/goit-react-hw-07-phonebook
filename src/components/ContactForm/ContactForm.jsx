@@ -33,7 +33,6 @@ export const ContactForm = () => {
     useFetchAddContactMutation();
   const { data: contacts } = useFetchAllContactsQuery();
 
-  console.log(isLoading);
 
   const [isContactAdded, setIsContactAdded] = useState(false);
 
