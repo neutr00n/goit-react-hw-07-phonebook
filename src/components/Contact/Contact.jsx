@@ -1,23 +1,26 @@
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDeleteContactMutation } from '../../redux/phoneBookApi';
+import { Loader } from '../Loader/Loader';
 import { IoIosContact } from 'react-icons/io';
-import { fetchRemoveContact } from '../../redux/contactsOperations';
-import { getContacts } from '../../redux/phoneBookSlice';
+import { toast } from 'react-toastify';
 import {
   ContactCount,
   ContactName,
   ContactNumber,
   ContactButton,
 } from './Contact.styled';
-import { LoaderBtn } from 'components/Loader/Loader';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const Contact = ({ name, phone, id, index }) => {
-  const dispatch = useDispatch();
-  const { isRemoving } = useSelector(getContacts);
+  const [deleteContact, { isLoading, isSuccess, isError }] =
+    useDeleteContactMutation();
 
-  const handleRemoveContact = contactId => {
-    dispatch(fetchRemoveContact(contactId));
-  };
+  if (isSuccess) {
+    toast.success('Contact successfully removed');
+  }
+  if (isError) {
+    toast.error('Something went wrong');
+  }
 
   return (
     <>
@@ -27,10 +30,10 @@ export const Contact = ({ name, phone, id, index }) => {
       <ContactNumber href={`tel: ${phone}`}>{phone}</ContactNumber>
       <ContactButton
         type="button"
-        disabled={isRemoving}
-        onClick={() => handleRemoveContact(id)}
+        disabled={isLoading}
+        onClick={() => deleteContact(id)}
       >
-        {isRemoving ? <LoaderBtn /> : 'X'}
+        {isLoading ? <Loader size={10} stroke={7} /> : 'X'}
       </ContactButton>
     </>
   );

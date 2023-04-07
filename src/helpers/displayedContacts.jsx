@@ -1,12 +1,13 @@
 import { useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/phoneBookSlice';
+import { getFilter } from 'redux/selectors';
+import { useFetchAllContactsQuery } from '../redux/phoneBookApi';
 
 export const DisplayedContacts = () => {
-  const { items } = useSelector(getContacts);
+  const { data = [] } = useFetchAllContactsQuery();
   const filteredContacts = useSelector(getFilter);
 
   const normalizedSearchingName = filteredContacts.toLocaleLowerCase().trim();
-  return items.filter(({ name }) =>
+  return data.filter(({ name }) =>
     name.toLocaleLowerCase().trim().includes(normalizedSearchingName)
   );
 };

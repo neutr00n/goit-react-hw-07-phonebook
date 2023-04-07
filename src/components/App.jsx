@@ -4,26 +4,17 @@ import { Filter } from './Filter/Filter';
 import { NoContacts } from './NoContacts/NoContacts';
 import { DisplayedContacts } from '../helpers/displayedContacts';
 import { Wrapper, Title, ContactsTitle } from './App.styled';
-import { fetchAllContacts } from '../redux/contactsOperations';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { getContacts } from '../redux/phoneBookSlice';
+import { useFetchAllContactsQuery } from '../redux/phoneBookApi';
 import { Loader } from './Loader/Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const App = () => {
-  const dispatch = useDispatch();
+  const { error, isError, isLoading } = useFetchAllContactsQuery();
   const displayedContacts = DisplayedContacts();
-  const { isLoading, error } = useSelector(getContacts);
-  const [isContactsLoaded, setContactsLoaded] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchAllContacts()).then(() => setContactsLoaded(true));
-  }, [dispatch, setContactsLoaded]);
-
-  if (error) {
-    toast.error(error);
+  if (isError) {
+    toast.error(error.data);
   }
 
   return (
@@ -32,10 +23,9 @@ export const App = () => {
       <ContactForm />
       <ContactsTitle>Contacts:</ContactsTitle>
       <Filter />
-      {isLoading && <Loader />}
-
-      {!isLoading && isContactsLoaded ? (
-        displayedContacts.length !== 0 ? (
+      {isLoading && <Loader size={60} stroke={2} />}
+      {!isLoading ? (
+        displayedContacts.length ? (
           <ContactList />
         ) : (
           <NoContacts />

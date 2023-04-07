@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setFilter, getFilter } from 'redux/phoneBookSlice';
+import { setFilter } from 'redux/phoneBookSlice';
+import { getFilter } from 'redux/selectors';
 import { FilterWrapper, FilterTitle, FilterInput } from './Filter.styled';
 
 export const Filter = () => {

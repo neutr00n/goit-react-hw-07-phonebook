@@ -1,8 +1,12 @@
 import { Formik, ErrorMessage } from 'formik';
 import * as yup from 'yup';
-import { useSelector, useDispatch } from 'react-redux';
-import { getContacts } from 'redux/phoneBookSlice';
-import { fetchAddContact } from '../../redux/contactsOperations';
+import { Loader } from '../Loader/Loader';
+import {
+  useFetchAddContactMutation,
+  useFetchAllContactsQuery,
+} from '../../redux/phoneBookApi';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
 import {
   ContForm,
   Label,
@@ -11,6 +15,7 @@ import {
   Button,
   ErrMessageText,
 } from './ContactForm.styled';
+import 'react-toastify/dist/ReactToastify.css';
 
 const nameRegExp = /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
 const phoneRegExp =
@@ -24,27 +29,41 @@ const schema = yup.object().shape({
 const initialValues = { name: '', phone: '' };
 
 export const ContactForm = () => {
-  const { items, isLoading } = useSelector(getContacts);
-  const dispatch = useDispatch();
+  const [addContact, { isSuccess, isError, isLoading }] =
+    useFetchAddContactMutation();
+  const { data: contacts } = useFetchAllContactsQuery();
+
+
+  const [isContactAdded, setIsContactAdded] = useState(false);
 
   const onFormSubmit = (values, { resetForm }) => {
     const isAdded = checkContactIsAdded(values);
 
     if (isAdded) {
-      return alert(`${values.name} is already in contacts`);
+      return toast.info(`${values.name} is already in contacts`);
     }
-    dispatch(fetchAddContact(values));
+    addContact(values);
 
+    setIsContactAdded(true);
     resetForm();
   };
 
   const checkContactIsAdded = ({ name }) => {
     const normalizedContactName = name.toLowerCase().trim();
 
-    return items.find(
+    return contacts.find(
       ({ name }) => name.toLowerCase().trim() === normalizedContactName
     );
   };
+
+  if (isContactAdded && isSuccess) {
+    toast.success('contact added successfully');
+    setIsContactAdded(false);
+  }
+
+  if (isError) {
+    toast.error('Something went wrong');
+  }
 
   return (
     <Formik
@@ -70,7 +89,7 @@ export const ContactForm = () => {
           />
         </Label>
         <Button type="submit" disabled={isLoading}>
-          Add contact
+          {isLoading ? <Loader size={25} stroke={3} /> : 'Add contact'}
         </Button>
       </ContForm>
     </Formik>
